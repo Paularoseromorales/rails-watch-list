@@ -1,10 +1,11 @@
 class ListsController < ApplicationController
+  before_action :set_list, only: %i[show destroy]
+
   def index
-    @movies = Movie.all
+    @lists = List.all
   end
 
   def show
-    @movie = Movie.find(params[:id])
   end
 
   def new
@@ -12,15 +13,26 @@ class ListsController < ApplicationController
   end
 
   def create
-    @movies = Movies.new(movies_params)
+    @list = List.new(list_params)
+    if @list.save
+      redirect_to lists_path(@list), notice: 'list was successfully created.'
+    else
+      render :new, status: :unprocessable_entity
+    end
   end
+
+  def destroy
+    @list.destroy
+    redirect_to lists_path, status: :see_other
+  end
+
   private
 
-  # def set_movies
-  #   @movies = Movie.find(params[:id])
-  # end
+  def set_list
+    @list = List.find(params[:id])
+  end
 
-  def movie_params
-    params.require(:movie).permit(:title, :overview, :poster_url, :rating)
+  def list_params
+    params.require(:list).permit(:name)
   end
 end
